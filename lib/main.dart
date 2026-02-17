@@ -11,7 +11,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(
+        colorScheme: .fromSeed(seedColor: Colors.deepPurple,
+        onPrimary: Colors.white,
+        onSurface: Colors.white,
+        ),
+        ),
+      
       home: calculadoraIMC(),
     );
   }
@@ -23,6 +29,12 @@ class calculadoraIMC extends StatefulWidget {
 }
 
 class _calculadoraIMCState extends State<calculadoraIMC> {
+  TextEditingController pesoController = TextEditingController(text:'');
+  TextEditingController alturaController = TextEditingController(text:'');
+  double? imc;
+  String? classificacao ;
+  Color? corResultado ;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +45,7 @@ class _calculadoraIMCState extends State<calculadoraIMC> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
+            imc == null ? Text('Adicione valores de peso e altura para calcular seu IMC',style: TextStyle(fontSize: 20),textAlign: TextAlign.center,):Container(
               width: 300,
               height: 300,
               decoration: BoxDecoration(
@@ -62,35 +74,45 @@ class _calculadoraIMCState extends State<calculadoraIMC> {
               children: [
                 Column(
                   children: [
-                    Text('Seu Peso'),
+                    Text('Seu Peso',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),),
                     Container(
                       width: 75,
                       child: TextField(
+                        style: TextStyle(color: Colors.white),
+                        controller: pesoController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                           suffixText: 'kg'
                         ),
+                        keyboardType: TextInputType.number,
                       ),
                     )
                   ],
                 ),
                 SizedBox(
-                  width: 24,
+                  width: 35,
                 ),
                 Column(
                   children: [
-                    Text('Sua altura'),
+                    Text('Sua altura',
+                    style: TextStyle(color: Colors.grey[300]),),
                     Container(
                       width: 75,
                       child: TextField(
+                        style: TextStyle(color: Colors.white),
+                        controller: alturaController,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                           suffixText:'M'
                         ),
+                        keyboardType: TextInputType.number,
                       ),
                     )
                   ],
@@ -99,14 +121,17 @@ class _calculadoraIMCState extends State<calculadoraIMC> {
             ),
             SizedBox(height: 20),
             Container(  
-              width: 250,
+              width: 230,
               height: 50,
-              child: ElevatedButton(onPressed: () {},
+              child: ElevatedButton(onPressed: () {
+                print(pesoController.text);
+                print(alturaController.text);
+              },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: Text(
                   'calcular',
                   style: TextStyle(
-                    color:Colors.white
+                    color:Colors.grey[300],
                     ),
                 ),
               ),
