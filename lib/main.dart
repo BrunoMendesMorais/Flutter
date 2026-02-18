@@ -29,39 +29,53 @@ class calculadoraIMC extends StatefulWidget {
 }
 
 class _calculadoraIMCState extends State<calculadoraIMC> {
-  TextEditingController pesoController = TextEditingController(text:'');
-  TextEditingController alturaController = TextEditingController(text:'');
-  double? imc;
-  String? classificacao ;
-  Color? corResultado ;
+  late TextEditingController pesoController;
+  late TextEditingController alturaController;
 
+  double imc = 0;
+  String classificacao = "Digite o peso e altura";
+  Color corResultado = Colors.white;
+  Color corFundo = Color.fromARGB(255, 0, 28, 50);
+
+  @override
+  void initState() {
+    pesoController = TextEditingController(text:'');
+    alturaController = TextEditingController(text:'');
+    super.initState();
+  }
+  @override
+  void dispose() {
+    pesoController.dispose();
+    alturaController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 0, 28, 50),
+      backgroundColor: corFundo,
       body: Container(
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            imc == null ? Text('Adicione valores de peso e altura para calcular seu IMC',style: TextStyle(fontSize: 20),textAlign: TextAlign.center,):Container(
+            Container(
               width: 300,
               height: 300,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(150),
-                border: Border.all(width: 6, color: Colors.lightGreen),
+                border: Border.all(width: 6, color: corResultado),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '24.22',
-                    style: TextStyle(fontSize: 36, color: Colors.lightGreen),
+                    '${imc?.toStringAsFixed(2)}',
+                    style: TextStyle(fontSize: 36, color: corResultado),
                   ),
                   Text(
-                    'Peso normal',
-                    style: TextStyle(fontSize: 23, color: Colors.lightGreen),
+                    '${classificacao}',
+                    style: TextStyle(fontSize: 23, color: corResultado),
                   ),
                 ],
               ),
@@ -124,8 +138,24 @@ class _calculadoraIMCState extends State<calculadoraIMC> {
               width: 230,
               height: 50,
               child: ElevatedButton(onPressed: () {
-                print(pesoController.text);
-                print(alturaController.text);
+                try{
+                  double peso = double.parse(pesoController.text);
+                  double altura = double.parse(alturaController.text); 
+                  setState(() {
+                    imc = peso / (altura*altura);
+                    classificacao = getClassificacaoIMC(imc);
+                    corResultado = getCor(imc);
+                    corFundo = getFundo(imc);
+                  });
+                }on Exception{
+                   setState(() {
+                    imc = 0;
+                    classificacao = "Digite valores validos";
+                    corResultado = Colors.lightBlueAccent;
+                    corFundo = Color.fromARGB(255, 0, 28, 50);
+                  });
+                }
+                
               },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: Text(
@@ -140,5 +170,59 @@ class _calculadoraIMCState extends State<calculadoraIMC> {
         ),
       ),
     );
+  }
+  String getClassificacaoIMC(double imc){
+    if(imc <= 18.5){
+      return 'Abaixo do peso';
+    }
+    if(imc <= 24.9){
+      return 'Peso normal';
+    }
+    if(imc <= 29.9){
+      return 'Sobrepeso';
+    }
+    if(imc <= 34.9){
+      return 'Obsidade Grau I';
+    }
+    if(imc <= 39.9){
+      return 'Obsidade Grau II';
+    }
+  return 'Obsidade Grau III';
+  }
+  Color getCor(double imc){
+    if(imc <= 18.5){
+      return Colors.red;
+    }
+    if(imc <= 24.9){
+      return Colors.green;
+    }
+    if(imc <= 29.9){
+      return Colors.yellow;
+    }
+    if(imc <= 34.9){
+      return Colors.orange;
+    }
+    if(imc <= 39.9){
+      return Colors.deepOrange;
+    }
+  return Colors.red;
+  }
+  Color getFundo(double imc){
+    if(imc <= 18.5){
+      return const Color.fromARGB(255, 33, 2, 0);
+    }
+    if(imc <= 24.9){
+      return const Color.fromARGB(255, 0, 36, 0);
+    }
+    if(imc <= 29.9){
+      return const Color.fromARGB(255, 45, 41, 0);
+    }
+    if(imc <= 34.9){
+      return const Color.fromARGB(255, 46, 28, 0);
+    }
+    if(imc <= 39.9){
+      return const Color.fromARGB(255, 37, 9, 0);
+    }
+  return const Color.fromARGB(255, 34, 2, 0);
   }
 }
